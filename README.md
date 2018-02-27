@@ -81,11 +81,248 @@ public class HelloAction {
 
 ![How struts2 work?](https://raw.githubusercontent.com/darkcar/struts2-framework/master/resources/how_struts_work.jpeg)
 
+## Section 1.3 - source code
 
-## Section 1.3 
+Filter will be created while the server starts, and init() method will be called. 
+
+Loading configuration files, including strut2-default.xm, struts2-plugin.xml, and struts.xml  
+
+## Section 1.4 - Core setting file "struts.xml" 
+
+1. Name and location are fixed. 
+
+2. Mainly used tags: package, action, and result 
+
+* package: Similar to java code package. All the action should be started as package tag. 
+
+* Properties: 1. name: 2. extends="struts-default", extends action.  3. namespace: by default "/", plus the action name get the access value.  /hellostruts
+
+## Section 1.5 - Action Tag
+
+1. Get access route 
+
+2. Properties: 
+
+* name: namespace+name value = path  name should be unique.
+
+* class:  full path to the class
+
+* method: by default, action has method "execute".  
+
+* result tag: According to the return-value, send to different path.  name same as the method return value. Type: How to send to the path, including forward or include.
+
+## Section 1.6 Struts2 Constants 
+
+struts.i18n.encoding=UTF-8 
+
+## Section 1.7 Module development 
+
+Write your own configuration file, and include the xml file in the main file. 
+
+```xml
+<!--If you have struts-hello.xml-->
+ <struts>
+	<include file="com/liyiandxuegang/action/struts-hello.xml"></include>
+ </struts>
+```
+
+## Section 1.8 How to write action and visit action methods?
+
+### Method 1 Create one single class
+
+### Method 2 Create class, implement interface Action
+
+### Method 3 Create class, extends ActionSupport [Use this method]
+
+## Section 1.9 Visit Action methods
+
+1. Use tag action method property.  If Action methods have return-value and type must be String. If return value void, return none;
+
+```xml
+<!--If action has few methods-->
+<action name="addbook" class="com.liyiandxuegang.methods.BookAction" method="addBook" />
+<action name="updatebook" class="com.liyiandxuegang.methods.BookAction" method="updateBook" />
+```
+
+2. General *  
+
+** method = {1} **  
+
+```xml
+<!--If we thousands of methods? -->
+<struts>
+	<package name="methoddemo" extends="struts-default" namespace="/">
+		<action name="func_*" class="com.liyiandxuegang.methods.GeneralFuncsAction" method="{1}" />
+	</package>
+</struts>
+```
+
+```java
+// GeneralFuncsAction.java
+public class GeneralFuncsAction extends ActionSupport{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	public String add(){
+		System.out.println("add function");
+		return NONE;
+	}
+	
+	public String update() {
+		System.out.println("update function");
+		return NONE;
+	}
+}
+
+```
 
 # Chapter 2 Struts2 Data Management
+
+1. Use global result page 
+
+If we have two functions, which returns the same value. We can use global-results
+
+```xml
+<struts>
+	<package name="global_method" extends="struts-default" namespace="/">
+		<global-results>
+			<result name="success">/index.jsp</result>
+		</global-results>
+		<action name="book" class="com.liyiandxuegang.action2.BookAction" />
+		<action name="order" class="com.liyiandxuegang.action2.OrderAction" />
+	</package>
+ </struts>
+```
+
+2. Local result page
+
+```xml
+<struts>
+	<package name="global_method" extends="struts-default" namespace="/">
+		<action name="book" class="com.liyiandxuegang.action2.BookAction">
+			<result name="success">/index.jsp</result>
+		</action>
+	</package>
+ </struts>
+```
+
+3. 如果同时配置了两个页面，局部页面有效。
+
+## Section 2.1 result type
+
+1. For redirecting to pages, there are two values. dispatcher or redirect. 
+
+```xml
+<result name="success" type="redirect">/index.jsp</result>
+```
+
+2. If to other actions, there are two values: chain or redirectAction. 
+
+Ex: /book ---> page /order
+```xml
+<action name="book" class="com.liyiandxuegang.action2.BookAction">
+	<result name="success" type="redirectAction">order</result> 
+</action>
+```
+
+## Section 2.2 Action get Form data
+
+web阶段，servlet使用request对象获取对象。
+
+How to get request object? 
+
+* Use ActionContext 
+
+We have a form page:
+
+```jsp
+<h1>Hello, Struts</h1>
+
+<form action="${pageContext.request.contextPath }/form1.action" method="post">
+	User name: <input type="text" name="username"><br>
+	Password: <input type="password" name="pwd"><br>
+	Address: <textarea rows="30" cols="50" name="address"></textarea><br>
+	<input type="submit" value="Submit">
+</form>
+```
+
+And we have the seting file, called, struts-form.xml.
+
+```xml
+<struts>
+	<package name="formSubmit" extends="struts-default" namespace="/">
+		<action name="form1" class="com.liyiandxuegang.form.Form1Action">
+			<result name="none">/success.jsp</result>
+		</action>
+	</package>
+</struts>
+```
+
+In our java file, we do accept the parameter value. 
+
+```java
+public class Form1Action extends ActionSupport{
+	@Override
+	public String execute() throws Exception {
+		// Use method 1, ActionContext
+		ActionContext actionContext = ActionContext.getContext();
+		Map<String, Object> map = actionContext.getParameters();
+		// loop map
+		Set<String> keysSet = map.keySet();
+		for(String key : keysSet) {
+			// Value is in array format. 
+			Object[] obj = (Object[]) map.get(key);
+			System.out.println(Arrays.toString(obj));
+		}
+		return NONE;
+	}
+}
+```
+
+* User ServletActionContext 
+
+Similarly, we create one function. 
+
+```java
+public String testServletActionContext() {
+		HttpServletRequest httpServletRequest = ServletActionContext.getRequest();
+		String username= httpServletRequest.getParameter("username");
+		String password = httpServletRequest.getParameter("pwd");
+		String address = httpServletRequest.getParameter("address");
+		System.out.println(username + ", " + password + ", " + address);
+		return NONE;
+}
+```
+
+This is static function, so it is much easier to get the request value. 
+
+* Use interface injection 
+
+## Section 2.3 
+
+1. how to use request, session, servletContext object in Action. 
+
+```java
+
+```
 
 # Chapter 3 Struts2 Value Stack 
 
 # Chapter 4 Struts2 Interceptor 
+
+
+
+
+
+
+
+
+
+
+
+
+
+

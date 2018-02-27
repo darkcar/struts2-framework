@@ -4,32 +4,23 @@
 	"http://struts.apache.org/dtds/struts-2.3.dtd">
 
  <struts>
- 	<package name="hellodemo" extends="struts-default" namespace="/">
- 		<!-- name: The url name -->
- 		<action name="hellostruts" class="com.liyiandxuegang.action.HelloAction">
- 			<result name="ok">/index.jsp</result>
- 		</action>
- 	</package>
+	<package name="global_method" extends="struts-default" namespace="/">
+		<global-results>
+			<!-- Type: the way to redirect, including forward or include -->
+			<!-- 
+				By default: dispatcher
+				redirect
+			 -->
+			<result name="success" type="dispatcher">/index.jsp</result>
+		</global-results>
+		<action name="book" class="com.liyiandxuegang.action2.BookAction">
+			<result name="success" type="redirectAction">order</result> 
+		</action>
+		<action name="order" class="com.liyiandxuegang.action2.OrderAction">
+			<result name="success" type="redirect">/index.jsp</result>
+		</action>
+	</package>
+	<include file="com/liyiandxuegang/form/struts-form.xml" />
  </struts>
  
  <!-- http://127.0.0.1/struts2_framework/hellodemo.action -->
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
