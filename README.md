@@ -9,7 +9,8 @@ Learn how to use struts2 framework.
 1. Introduction
 
 The Struts framework resides in the web-tier. 
-Struts applications are hosted by a web container and can make use of services provided by the container, such as handling requests via HTTP and HTTPS protocols. 
+Struts applications are hosted by a web container and can make use of services provided by the container, 
+such as handling requests via HTTP and HTTPS protocols. 
 This frees developers to focus on building applications that solve business problems.
 
 2. Version 
@@ -47,6 +48,38 @@ This frees developers to focus on building applications that solve business prob
 
 - Write Filter-mapping (05)
 
+```xml
+  <filter>
+  	<filter-name>struts2</filter-name>
+  	<filter-class>org.apache.struts2.dispatcher.ng.filter.StrutsPrepareAndExecuteFilter</filter-class>
+  </filter>
+	<filter-mapping>
+		<filter-name>struts2</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+```
+
+- Create HelloAction.java
+
+```java
+package com.liyiandxuegang.action;
+
+public class HelloAction {
+	
+	/* 
+	 * [Servlet] 1.  Visit servlet, the service() method will be executed.
+	 * 
+	 * [Struts2] 2. Similarly, there is a method called execute().
+	 *  
+	 */
+	public String execute() {
+		System.out.println("Run through here");
+		return "ok";
+	}
+}
+```
+
+![How struts2 work?]()
 
 
 ## Section 1.3 
