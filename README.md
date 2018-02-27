@@ -79,7 +79,7 @@ public class HelloAction {
 }
 ```
 
-![How struts2 work?]()
+![How struts2 work?](https://raw.githubusercontent.com/darkcar/struts2-framework/master/resources/how_struts_work.jpeg)
 
 
 ## Section 1.3 
