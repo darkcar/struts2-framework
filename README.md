@@ -306,8 +306,211 @@ This is static function, so it is much easier to get the request value.
 1. how to use request, session, servletContext object in Action. 
 
 ```java
+HttpServletRequest httpServletRequest = ServletActionContext.getRequest();
+httpServletRequest.setAttribute("username", username);
+HttpSession session = httpServletRequest.getSession();
+session.setAttribute("sess", "sessVal");
+```
+_ServletContext doesn't use much._ 
+
+2. Struts2 封装获取数据的方法
+
+* Use original way
+
+Imagine we have an Entity named "User"
+
+```java
+package com.liyiandxuegang.entity;
+
+public class User {
+	private String username;
+	private String password;
+	private String address;
+	public String getUsername() {
+		return username;
+	}
+	public void setUsername(String username) {
+		this.username = username;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	
+	@Override
+	public String toString() {
+		return this.getUsername() + ", " + this.getPassword() + ", " + this.getAddress();
+	}
+}
 
 ```
+
+And Action Class named Form2Action
+
+```java
+public class Form2Action extends ActionSupport{
+
+	@Override
+	public String execute() throws Exception {
+		HttpServletRequest httpServletRequest = ServletActionContext.getRequest();
+		String username = httpServletRequest.getParameter("username");
+		String password = httpServletRequest.getParameter("pwd");
+		String address = httpServletRequest.getParameter("address");
+		
+		User user = new User();
+		user.setUsername(username);
+		user.setPassword(password);
+		user.setAddress(address);
+		System.out.println(user);
+		return NONE;
+	}
+}
+```
+
+** After we submit the form, we can get and set the Entity value in the action.** 
+
+Struts2提供的封装方式：
+ 
+* 属性封装
+
+在action成员变量位置定义变量，变量名称和表单输入项的name属性值一样。
+
+```jsp
+<form action="${pageContext.request.contextPath }/data" method="post">
+	User name: <input type="text" name="username"><br>
+	Password: <input type="password" name="pwd"><br>
+	Address: <textarea rows="30" cols="50" name="address"></textarea><br>
+	<input type="submit" value="Submit">
+</form>
+```
+
+In action class,
+
+```java
+public class Date1Action extends ActionSupport{
+	private String username;
+	private String pwd;
+	private String address;
+	public String getUsername() {
+		return username;
+	}
+	public void setUsername(String username) {
+		this.username = username;
+	}
+	public String getPwd() {
+		return pwd;
+	}
+	public void setPwd(String pwd) {
+		this.pwd = pwd;
+	}
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	@Override
+	public String execute() throws Exception {
+		 System.out.println(username + ", " + pwd + ", " + address);
+		return NONE;
+	}
+}
+```
+
+After you click submit the form, the data has been binded to the Action Support member fields. 
+
+* 模型驱动封装: 可以把数据直接封装到实体对象里面
+
+1. Keep the form fields name the same as the Entity properties name.
+
+2. Easy to implement in Action class
+
+```jsp
+<form action="${pageContext.request.contextPath }/data1" method="post">
+	User name: <input type="text" name="username"><br>
+	Password: <input type="password" name="password"><br>
+	Address: <textarea rows="30" cols="50" name="address"></textarea><br>
+	<input type="submit" value="Submit">
+</form>
+``` 
+
+3. Create the Entity class and implement the function getModel();
+
+```java
+public class Data2Action extends ActionSupport implements ModelDriven<User>{
+
+	private static final long serialVersionUID = 1L;
+
+	private User user = new User();
+	@Override
+	public User getModel() {
+		return user;
+	}
+	
+	@Override
+	public String execute() throws Exception {
+		System.out.println(user);
+		return NONE;
+	}
+}
+
+```
+
+4. 使用模型驱动和属性封装需要注意的问题：
+
+在一个action中，获取表单数据可以属性封装，也可以使用模型驱动封装，不能同时使用属性封装和模型驱动封装。
+
+* 表达式封装
+
+1. 在action里面声明实体类
+
+2. 生成实体类变量的set和get 方法
+
+3. 在表单输入项的name属性值里面写表达式形式
+
+```java
+public class Data3Action extends ActionSupport{
+	private User user;
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+	
+	@Override
+	public String execute() throws Exception {
+		System.out.println(user);
+		return NONE;
+	}
+}
+```
+and in jsp file 
+
+```jsp
+<form action="${pageContext.request.contextPath }/data3" method="post">
+	User name: <input type="text" name="user.username"><br>
+	Password: <input type="password" name="user.password"><br>
+	Address: <textarea rows="30" cols="50" name="user.address"></textarea><br>
+	<input type="submit" value="Submit">
+</form>
+```
+
+比较表达式封装和模型驱动封装：
+
+1. 两者都可以把数据封装到实体类中。
+
+2. 在模型驱动中只能将数据封装到一个实体类中。使用表达式封装就可以把数据封装到不同的实体类中。[15]
 
 # Chapter 3 Struts2 Value Stack 
 

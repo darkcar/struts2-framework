@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -42,6 +43,9 @@ public class Form1Action extends ActionSupport{
 		session.setAttribute("sess", "sessVal");
 		
 		// get servletContext domain
+		ServletContext servletContext = ServletActionContext.getServletContext();
+		servletContext.setAttribute("contextName", "contextval");
+		
 		
 		return NONE;
 	}
