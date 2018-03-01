@@ -24,6 +24,7 @@
 	<include file="com/liyiandxuegang/form/struts-form2.xml" />
 	<include file="com/liyiandxuegang/data/struts-data.xml" />
 	<include file="com/liyiandxuegang/data/struts-data1.xml" />
+	
  </struts>
  
  <!-- http://127.0.0.1/struts2_framework/hellodemo.action -->

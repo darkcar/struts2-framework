@@ -1,4 +1,4 @@
-# struts2-framework
+# Struts2-framework
 
 Learn how to use struts2 framework. 
 
@@ -512,7 +512,51 @@ and in jsp file
 
 2. 在模型驱动中只能将数据封装到一个实体类中。使用表达式封装就可以把数据封装到不同的实体类中。[15]
 
-# Chapter 3 Struts2 Value Stack 
+# Chapter 3 Struts2 Value Stack [day 03]
+
+## Section 3.1 OGNL
+
+Similar to EL expression. OGNL不是Struts2的一部分。
+
+在struts2把数据放到值栈中，在页面中获取值栈数据。
+
+Servlet和action区别：
+
+Servlet对象默认第一次访问是创建，创建一次，单实例对象。
+
+Action访问时创建，每次访问时都会创建一个action对象。
+
+值栈的存储位置：每个action对象 只有一个值栈对象。
+
+## Section 3.2 Get stack value
+
+Use ActionContext get value stack.
+
+```java
+
+// get ActionContext obj
+ActionContext context = ActionContext.getContext();
+		
+// get valuestack obj
+ValueStack valueStack = context.getValueStack();
+
+```
+值栈中两部分内容：
+
+1. root 就是 List集合
+
+2. context 是Map集合 
+
+常用的就是root集合。［06］
+
+
+
+
+
+
+
+
+
 
 # Chapter 4 Struts2 Interceptor 
 
